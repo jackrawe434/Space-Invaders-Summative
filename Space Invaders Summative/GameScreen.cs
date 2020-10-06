@@ -10,17 +10,28 @@ using System.Windows.Forms;
 
 namespace Space_Invaders_Summative
 {
+    
+
     public partial class GameScreen : UserControl
     {
+
+        //These are referred to in the end screen
+        public static Boolean winCondtion = false;
+        public static Boolean loseCondtion = false;
+        public static int score = 0;
+
         //List declaration
         Hero newHero;
         Pellet newPellet;
-
+        
+        //Establish lists
         List<Monster> monsterRow1 = new List<Monster>();
         List<Monster> monsterRow2 = new List<Monster>();
         List<Monster> monsterRow3 = new List<Monster>();
-        List<Hero> heroList = new List<Hero>();
         List<Pellet> pelletList = new List<Pellet>();
+
+        //Pellet counter
+        int pelletCounter = 50;
 
         //Brushes to paint objects
         SolidBrush monsterBrush = new SolidBrush(Color.White);
@@ -30,6 +41,7 @@ namespace Space_Invaders_Summative
         int leftX = 100;
         int leftY = 50;
         int monsterDirection = 1;
+        int nextDirection = 2;
 
         // Hero distance from left side of screen and top of screen
         int HeroLeftX = 300;
@@ -54,13 +66,14 @@ namespace Space_Invaders_Summative
 
         public void HitBoxCheck()
         {
-            //Rectangle pelletRec = new Rectangle(pelletList[0].pelletX, pelletList[0].pelletY, pelletList[0].pelletSize, pelletList[0].pelletSize);
-            //Rectangle monsterRec = new Rectangle(monsterRow1[0].monsterX, monsterRow1[0].monsterY, monsterRow1[0].monsterSize, monsterRow1[0].monsterSize);
+           
 
-            //if (pelletRec.IntersectsWith(monsterRec))
-            //{
-            //    monsterRow1.RemoveAt(0);
-            //}
+            foreach (Monster h in monsterRow1)
+            {
+
+            }
+            
+
 
         }
 
@@ -80,7 +93,7 @@ namespace Space_Invaders_Summative
             Monster newMonster4 = new Monster(leftX + 60 + 60 + 60, leftY, 30, Color.White);
             monsterRow1.Add(newMonster4);
 
-            Monster newMonster5 = new Monster(leftX + 60 + 60 + 60 +60, leftY, 30, Color.White);
+            Monster newMonster5 = new Monster(leftX + 60 + 60 + 60 + 60, leftY, 30, Color.White);
             monsterRow1.Add(newMonster5);
 
             Monster newMonster6 = new Monster(leftX + 60 + 60 + 60 + 60 + 60, leftY, 30, Color.White);
@@ -147,15 +160,18 @@ namespace Space_Invaders_Summative
 
         public void MakeHero()
         {
-            newHero= new Hero(HeroLeftX, HeroLeftY, 20, Color.Green);        
+            newHero = new Hero(HeroLeftX, HeroLeftY, 20, Color.Green);
         }
 
         public void MakePellet()
         {
-            if (spaceDown == true)
+            // This pellet counter governs how fast the hero can shoot as every time the hero shoots
+            pelletCounter++;
+            if (spaceDown == true && pelletCounter > 25)
             {
                 newPellet = new Pellet(newHero.heroX, newHero.heroY, 10, Color.Green);
                 pelletList.Add(newPellet);
+                pelletCounter = 0;
             }
         }
 
@@ -164,26 +180,16 @@ namespace Space_Invaders_Summative
             MakeMonster();
             MoveMonster();
             MakeHero();
-            MoveHero();          
-            HitBoxCheck();
+            MoveHero();
         }
 
         public void MoveMonster()
         {
-            int monsterCounter = monsterRow1.Count();
-
-
-
-            if (monsterRow1[monsterCounter-1].monsterX >= this.Width - 170)
-            {
-                monsterDirection = 2;
-            }
-
             if (monsterDirection == 1)
             {
                 foreach (Monster b in monsterRow1.Union(monsterRow2).Union(monsterRow3))
                 {
-                    b.MoveX(2);
+                    b.MoveX(1);
                 }
             }
 
@@ -191,37 +197,52 @@ namespace Space_Invaders_Summative
             {
                 foreach (Monster b in monsterRow1.Union(monsterRow2).Union(monsterRow3))
                 {
-                    b.MoveY(1);                   
+                    b.MoveY(1);
                 }
- 
             }
 
-            if (counter >= 20)
-            {
-                monsterDirection = 3;
-                counter = 0;
-            }
-
-            if (monsterDirection == 3)
+            else if (monsterDirection == 3)
             {
                 foreach (Monster b in monsterRow1.Union(monsterRow2).Union(monsterRow3))
                 {
-                    b.MoveBackX(2);
+                    b.MoveX(-1);
                 }
             }
 
+            //Check positions and change direction if need be
 
-            if (monsterDirection == 3 && monsterRow1[0].monsterX <= 0 + 10)
+            if (monsterDirection != 2)
             {
 
-                monsterDirection = 2;              
+                foreach (Monster b in monsterRow1.Union(monsterRow2).Union(monsterRow3))
+                {
+                    if (b.monsterX >= this.Width - 120)
+                    {
+                        monsterDirection = 2;
+                        nextDirection = 3;
+                    }
+                }
+
+                foreach (Monster b in monsterRow1.Union(monsterRow2).Union(monsterRow3))
+                {
+                    if (b.monsterX < 10)
+                    {
+                        monsterDirection = 2;
+                        nextDirection = 1;
+                    }
+                }
+
             }
 
-            if (counter >= 20)
+            else
             {
-                monsterDirection = 1;
+                counter++;
+                if (counter >= 20)
+                {
+                    monsterDirection = nextDirection;
+                    counter = 0;
+                }
             }
-
         }
 
         public void MoveHero()
@@ -240,22 +261,41 @@ namespace Space_Invaders_Summative
 
         public void MovePellet()
         {
-            
-
-            //Rectangle pelletRec = new Rectangle(pelletList[0].pelletX, pelletList[0].pelletY, pelletList[0].pelletSize, pelletList[0].pelletSize);
-            //Rectangle monsterRec = new Rectangle(monsterRow1[0].monsterX, monsterRow1[0].monsterY, monsterRow1[0].monsterSize, monsterRow1[0].monsterSize);
-
             foreach (Pellet b in pelletList)
             {
                 b.PelletMoveY(5);
             }
+       
 
-            //if (pelletList[0].pelletY <= 0 || pelletRec.IntersectsWith(monsterRec))
-            //{
-            //    pelletList.RemoveAt(0);
-            //}
         }
-        
+
+        public void GameEndCondtions()
+        {
+          if (score == 2400)
+            {
+                winCondtion = true;
+                GameEnd();
+            }
+
+            foreach (Monster b in monsterRow1.Union(monsterRow2).Union(monsterRow3))
+            {
+                if (b.monsterY <= 300)
+                {
+                    loseCondtion = true;
+                    GameEnd();
+                }
+            }
+
+        }
+
+        public void GameEnd()
+        {
+            Form f = this.FindForm();
+            f.Controls.Remove(this);
+            EndScreen es = new EndScreen();
+            f.Controls.Add(es);
+        }
+
         private void GameScreen_Paint(object sender, PaintEventArgs e)
         {
             foreach (Monster b in monsterRow1)
@@ -273,8 +313,8 @@ namespace Space_Invaders_Summative
                 e.Graphics.FillRectangle(monsterBrush, b.monsterX, b.monsterY, b.monsterSize, b.monsterSize);
             }
 
-                e.Graphics.FillRectangle(heroBrush, newHero.heroX, newHero.heroY, newHero.heroSize, newHero.heroSize);
-            
+            e.Graphics.FillRectangle(heroBrush, newHero.heroX, newHero.heroY, newHero.heroSize, newHero.heroSize);
+
 
             foreach (Pellet n in pelletList)
             {
@@ -326,6 +366,8 @@ namespace Space_Invaders_Summative
             MoveHero();
             MakePellet();
             MovePellet();
+            HitBoxCheck();
+            GameEndCondtions();
             Refresh();
         }
     }

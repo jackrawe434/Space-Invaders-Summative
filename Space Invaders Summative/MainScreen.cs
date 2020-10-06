@@ -33,6 +33,7 @@ namespace Space_Invaders_Summative
                         f.Controls.Remove(this);
                         GameScreen gs = new GameScreen();
                         f.Controls.Add(gs);
+                        gs.Focus();
                     }
                     break; 
             }
