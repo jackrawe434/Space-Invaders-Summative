@@ -38,7 +38,7 @@
             this.winOrLoseLabel.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.winOrLoseLabel.Font = new System.Drawing.Font("Bauhaus 93", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.winOrLoseLabel.ForeColor = System.Drawing.Color.LimeGreen;
-            this.winOrLoseLabel.Location = new System.Drawing.Point(25, 127);
+            this.winOrLoseLabel.Location = new System.Drawing.Point(109, 121);
             this.winOrLoseLabel.Name = "winOrLoseLabel";
             this.winOrLoseLabel.Size = new System.Drawing.Size(455, 73);
             this.winOrLoseLabel.TabIndex = 3;

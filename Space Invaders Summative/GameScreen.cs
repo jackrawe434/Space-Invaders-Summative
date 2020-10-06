@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace Space_Invaders_Summative
 {
-    
+
 
     public partial class GameScreen : UserControl
     {
@@ -23,7 +23,7 @@ namespace Space_Invaders_Summative
         //List declaration
         Hero newHero;
         Pellet newPellet;
-        
+
         //Establish lists
         List<Monster> monsterRow1 = new List<Monster>();
         List<Monster> monsterRow2 = new List<Monster>();
@@ -66,13 +66,56 @@ namespace Space_Invaders_Summative
 
         public void HitBoxCheck()
         {
-           
 
-            foreach (Monster h in monsterRow1)
+
+            foreach (Pellet p in pelletList)
             {
+                Rectangle pelletRec = new Rectangle(p.pelletX, p.pelletY, p.pelletSize, p.pelletSize);
+
+                foreach (Monster m in monsterRow1)
+                {
+                    Rectangle monRec = new Rectangle(m.monsterX, m.monsterY, m.monsterSize, m.monsterSize);
+
+                    if (pelletRec.IntersectsWith(monRec))
+                    {
+                        pelletList.Remove(p);
+                        monsterRow1.Remove(m);
+                        score = score + 100;
+                        return;
+                    }
+
+                }
+
+                foreach (Monster m in monsterRow2)
+                {
+                    Rectangle monRec = new Rectangle(m.monsterX, m.monsterY, m.monsterSize, m.monsterSize);
+
+                    if (pelletRec.IntersectsWith(monRec))
+                    {
+                        pelletList.Remove(p);
+                        monsterRow2.Remove(m);
+                        score = score + 100;
+                        return;
+                    }
+
+                }
+
+                foreach (Monster m in monsterRow3)
+                {
+                    Rectangle monRec = new Rectangle(m.monsterX, m.monsterY, m.monsterSize, m.monsterSize);
+
+                    if (pelletRec.IntersectsWith(monRec))
+                    {
+                        pelletList.Remove(p);
+                        monsterRow3.Remove(m);
+                        score = score + 100;
+                        return;
+                    }
+
+                }
 
             }
-            
+
 
 
         }
@@ -167,7 +210,7 @@ namespace Space_Invaders_Summative
         {
             // This pellet counter governs how fast the hero can shoot as every time the hero shoots
             pelletCounter++;
-            if (spaceDown == true && pelletCounter > 25)
+            if (spaceDown == true && pelletCounter > 20)
             {
                 newPellet = new Pellet(newHero.heroX, newHero.heroY, 10, Color.Green);
                 pelletList.Add(newPellet);
@@ -237,7 +280,7 @@ namespace Space_Invaders_Summative
             else
             {
                 counter++;
-                if (counter >= 20)
+                if (counter >= 50)
                 {
                     monsterDirection = nextDirection;
                     counter = 0;
@@ -248,12 +291,12 @@ namespace Space_Invaders_Summative
         public void MoveHero()
         {
 
-            if (leftArrowDown == true)
+            if (leftArrowDown == true && newHero.heroX > 0)
             {
                 newHero.heroX -= heroSpeed;
             }
 
-            if (rightArrowDown == true)
+            if (rightArrowDown == true && newHero.heroX < this.Width - 120)
             {
                 newHero.heroX += heroSpeed;
             }
@@ -265,35 +308,37 @@ namespace Space_Invaders_Summative
             {
                 b.PelletMoveY(5);
             }
-       
+
 
         }
 
         public void GameEndCondtions()
         {
-          if (score == 2400)
+            if (score == 2400)
             {
                 winCondtion = true;
                 GameEnd();
             }
-
-            foreach (Monster b in monsterRow1.Union(monsterRow2).Union(monsterRow3))
+            foreach (Monster m in monsterRow1.Union(monsterRow2).Union(monsterRow3))
             {
-                if (b.monsterY <= 300)
+                if (m.monsterY >= this.Height - 100)
                 {
-                    loseCondtion = true;
+                   loseCondtion = true;
                     GameEnd();
+                    return;
                 }
             }
-
         }
 
         public void GameEnd()
         {
+            timer1.Enabled = false;
             Form f = this.FindForm();
             f.Controls.Remove(this);
             EndScreen es = new EndScreen();
             f.Controls.Add(es);
+            es.Focus();
+
         }
 
         private void GameScreen_Paint(object sender, PaintEventArgs e)

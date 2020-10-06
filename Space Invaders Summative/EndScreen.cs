@@ -17,7 +17,7 @@ namespace Space_Invaders_Summative
         {
             InitializeComponent();
 
-            
+
 
             if (GameScreen.winCondtion = true)
             {
@@ -32,13 +32,7 @@ namespace Space_Invaders_Summative
                 scoreLabel.Text = "Your Score: " + GameScreen.score;
             }
 
-            if (spaceDown == true)
-            {
-                Form f = this.FindForm();
-                f.Controls.Remove(this);
-                MainScreen ms = new MainScreen();
-                f.Controls.Add(ms);
-            }
+
 
 
         }
@@ -58,8 +52,16 @@ namespace Space_Invaders_Summative
             switch (e.KeyCode)
             {
                 case Keys.Space:
-                    spaceDown = true;
+                    Form f = this.FindForm();
+                    f.Controls.Remove(this);
+                    MainScreen ms = new MainScreen();
+                    f.Controls.Add(ms);
+                    ms.Focus();
+                    GameScreen.winCondtion = false;
+                    GameScreen.loseCondtion = false;
+                    GameScreen.score = 0;
                     break;
+
             }
         }
     }
